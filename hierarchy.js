@@ -7,9 +7,11 @@
 // console.log('retrievedObject: ', retrievedObject);
 
 class Element {
-    constructor(id, tag, classes, props, children) {
+    constructor(id, tag, level, parent, classes, props, children) {
         this.id = id;
         this.tag = tag;
+        this.level = level;
+        this.parent = parent;
         this.classes = classes;
         this.props = props;
         this.children = children;
@@ -26,21 +28,21 @@ var selectedBrick = null;
 
 function clickLogo() {
 
-    var elem0 = new Element('page', 'div', ['brick', 'level0'], [], [])
+    var elem0 = new Element('page', 'div', 0, null, ['brick', 'level0'], [], [])
 
-    var elem1 = new Element('header', 'div', ['brick', 'level1'], [], [])
+    var elem1 = new Element('header', 'div', 1, elem0, ['brick', 'level1'], [], [])
 
-    var elem11 = new Element('logo', 'div', ['brick', 'level2'], [], [])
-    var elem12 = new Element('login', 'div', ['brick', 'level2'], [], [])
-    var elem121 = new Element('signUp', 'div', ['brick', 'level3'], [], [])
+    var elem11 = new Element('logo', 'div', 2, elem1, ['brick', 'level2'], [], [])
+    var elem12 = new Element('login', 'div', 2, elem1, ['brick', 'level2'], [], [])
+    var elem121 = new Element('signUp', 'div', 3, elem12, ['brick', 'level3'], [], [])
 
-    var elem2 = new Element('content', 'div', ['brick', 'level1'], [], [])
+    var elem2 = new Element('content', 'div', 1, elem0, ['brick', 'level1'], [], [])
 
-    var elem21 = new Element('sortControls', 'div', ['brick', 'level2'], [], [])
-    var elem211 = new Element('sortByDate', 'div', ['brick', 'level3'], [], [])
-    var elem212 = new Element('sortByAuthor', 'div', ['brick', 'level3'], [], [])
-    var elem22 = new Element('mainText', 'div', ['brick', 'level2'], [], [])
-    var elem221 = new Element('insetImage', 'div', ['brick', 'level3'], [], [])
+    var elem21 = new Element('sortControls', 'div', 2, elem2, ['brick', 'level2'], [], [])
+    var elem211 = new Element('sortByDate', 'div', 3, elem21, ['brick', 'level3'], [], [])
+    var elem212 = new Element('sortByAuthor', 'div', 3, elem21, ['brick', 'level3'], [], [])
+    var elem22 = new Element('mainText', 'div', 2, elem2, ['brick', 'level2'], [], [])
+    var elem221 = new Element('insetImage', 'div', 3, elem22, ['brick', 'level3'], [], [])
 
     elem0.children.push(elem1);
     elem0.children.push(elem2);
@@ -71,6 +73,40 @@ function clickBrick(elem) {
     }
     
     updateAll();
+}
+
+function clickAdd(event, elem) {
+    stopProp(event);
+    
+    var virtualId = toVirtualId(elem.id);
+    var parent = getElementWithId(virtualId);
+    var tempId = parent.id + '-child' + parent.children.length;
+    var child = new Element(tempId, 'div', parent.level + 1, parent, ['brick', 'level' + (parent.level + 1)], [], [])
+    parent.children.push(child);
+    selectedBrick = child;
+    updateAll();
+}
+
+function clickDuplicate(event, elem) {
+    stopProp(event);
+
+    var virtualId = toVirtualId(elem.id);
+    var sibling = getElementWithId(virtualId);
+    var parent = sibling.parent;
+    var tempId = sibling.id + '-sibling' + parent.children.length;
+    var child = new Element(tempId, 'div', parent.level + 1, parent, ['brick', 'level' + (parent.level + 1)], [], [])
+    parent.children.push(child);
+    selectedBrick = child;
+    updateAll();
+}
+
+function stopProp(event) {
+    if (event.stopPropagation){
+        event.stopPropagation();
+    }
+    else if(window.event){
+       window.event.cancelBubble=true;
+    }
 }
 
 function toRealId(virtual) {
@@ -118,12 +154,15 @@ function createHierarchy(root, hierarchy, level) {
     elem.setAttribute('onclick', 'clickBrick(this)')
     var classes = 'brick';
     classes += ' level' + level;
+    classes += ' noselect';
     elem.innerHTML = root.id;
     if (selectedBrick != null && root.id == selectedBrick.id) {
         classes += ' selected';
-        elem.innerHTML = '-';
-        elem.appendChild(createDuplicateButton());
-        elem.appendChild(createAddButton());
+        elem.innerHTML = '';
+        if (root.parent != null) { // Don't have these buttons if at level 0.
+            elem.appendChild(createDuplicateButton(root));
+        }
+        elem.appendChild(createAddButton(root));
     }
     elem.setAttribute('class', classes);
 
@@ -192,25 +231,25 @@ function addInput(parent, value, short = false) {
     parent.appendChild(elem);
 }
 
-function createDuplicateButton() {
+function createDuplicateButton(obj) {
     var button = document.createElement('img');
     // <img class="icon" title="Duplicate this element" src="images/duplicate.png" alt="Dup">
     button.setAttribute('class', 'icon');
     button.setAttribute('src', 'images/duplicate.png');
     button.setAttribute('title', 'Duplicate this element');
     button.setAttribute('alt', 'Dup');
-    button.setAttribute('onclick', 'clickDuplicate(this)');
+    button.setAttribute('onclick', 'clickDuplicate(event, this.parentElement)');
 
     return button;
 }
 
-function createAddButton() {
+function createAddButton(obj) {
     var button = document.createElement('img');
     button.setAttribute('class', 'icon');
     button.setAttribute('src', 'images/add.png');
     button.setAttribute('title', 'Add a child element');
     button.setAttribute('alt', 'Add');
-    button.setAttribute('onclick', 'clickAdd(this)');
+    button.setAttribute('onclick', 'clickAdd(event, this.parentElement)');
 
     return button;
 }

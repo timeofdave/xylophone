@@ -1,9 +1,9 @@
 
 .brick {
-    background-color: #333;
+    background-color: #666;
     height: 16px;
     width: 160px;
-    margin-left: 4px;
+    margin-left: 50px;
     margin-top: 2px;
     margin-bottom: 2px;
     border-radius: 4px;
@@ -28,6 +28,11 @@
 .level3 {
     background-color: crimson;
     margin-left: 30px;
+}
+
+.level4 {
+    background-color: darkgoldenrod;
+    margin-left: 40px;
 }
 
 .selected {
