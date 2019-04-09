@@ -20,7 +20,7 @@ property
 property
 property
 
-The brick also needs three buttons (maybe more later).
+The brick also needs buttons:
 add class
 add property
 convert props to class
