@@ -1,0 +1,45 @@
+
+.brick {
+    background-color: #333;
+    height: 16px;
+    width: 160px;
+    margin-left: 4px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+.level1 {
+    background-color: rebeccapurple;
+    margin-left: 4px;
+}
+
+.level2 {
+    background-color: royalblue;
+    margin-left: 14px;
+}
+
+.level3 {
+    background-color: crimson;
+    margin-left: 24px;
+}
+
+.selected {
+    margin-bottom: 0px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    padding: 4px;
+}
+
+.keystone {
+    margin-left: 4px;
+    margin-top: 0px;
+    height: 240px;
+    width: 200px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+/* Fake data */

@@ -1,0 +1,47 @@
+Possible name "xylophone", after the colorful bars in the hierarchy.
+
+The most important thing is that I introduce NO magic. The conceptual structure will be exactly the same as the output structure.
+
+Most of the window is for the graphical display. 
+
+On the right side, there is a panel with a hierarchy of all objects.
+
+At the bottom of the panel, the class window will appear. When a class is selected in the hierarchy, it displays that class. Otherwise, it is a scrolling list of all available classes.
+
+The hierarchy is indented slightly for each level, and perhaps multi-colored to aid in readability. The hierarchy looks like a stack of poorly aligned colorful jenga bricks. Inside the bar is the type (div, etc) and the id (the name, essentially).
+
+On clicking on the bar, it expands downwards (and perhaps takes up the full width of the side panel). The id and type move down one space, so that the brick can be collapsed by clicking on the top space of the brick.
+
+Brick sturcture:
+id	tag
+class1
+class2
+property
+property
+property
+
+The brick also needs three buttons (maybe more later).
+add class
+add property
+convert props to class
+delete
+minimize
+add child
+duplicate
+
+Users of the app shouldn't have to know/remember how to do simple things like make a div stick to the top of the screen, or be centered inside its parent. So there will be a set of default classes for tasks like that, which are not magical at all. They just show up in the list of classes along with user-created classes.
+
+The graphical display:
+The entire display is the first-level div, and it is then divided into smaller divs. Margin and padding are visible, like in Chrome dev tools.
+
+
+Don't use float. Use flexbox or inline-block. Inline block seems to work.
+
+Everything should be controlled by the state. Both the real DOM and the virutal DOM should be based off of the state. Events come from them to modify the state, and then both UIs are updated from there.
+
+
+
+
+
+
+

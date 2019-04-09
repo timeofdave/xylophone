@@ -1,0 +1,15 @@
+
+input {
+    height: 16px;
+    width: 160px;
+    background: rgba(0, 0, 0, 0.3);
+    border-style: none;
+    border-radius: 4px;
+    margin: 4px;
+    padding-left: 4px;
+    color: white;
+}
+
+#id, #tag {
+    width: 60px;
+}
