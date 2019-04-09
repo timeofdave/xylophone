@@ -10,6 +10,6 @@ input {
     color: white;
 }
 
-#id, #tag {
-    width: 60px;
+.short {
+    width: 74px;
 }

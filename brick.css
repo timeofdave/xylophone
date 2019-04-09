@@ -10,19 +10,24 @@
     padding: 4px;
 }
 
+.level0 {
+    background-color: teal;
+    margin-left: 4px;
+}
+
 .level1 {
     background-color: rebeccapurple;
-    margin-left: 4px;
+    margin-left: 10px;
 }
 
 .level2 {
     background-color: royalblue;
-    margin-left: 14px;
+    margin-left: 20px;
 }
 
 .level3 {
     background-color: crimson;
-    margin-left: 24px;
+    margin-left: 30px;
 }
 
 .selected {
