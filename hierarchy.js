@@ -7,13 +7,14 @@
 // console.log('retrievedObject: ', retrievedObject);
 
 class Element {
-    constructor(id, tag, level, parent, classes, props, children) {
+    constructor(id, tag, level, parent, classes, styles, attributes, children) {
         this.id = id;
         this.tag = tag;
         this.level = level;
         this.parent = parent;
         this.classes = classes;
-        this.props = props;
+        this.styles = styles;
+        this.attributes = attributes;
         this.children = children;
     }
 
@@ -28,21 +29,21 @@ var selectedBrick = null;
 
 window.onload = function clickLogo() {
 
-    var elem0 = new Element('page', 'div', 0, null, ['brick', 'level0'], [], [])
+    var elem0 = new Element('page', 'div', 0, null, ['brick', 'level0'], [], [], [])
 
-    var elem1 = new Element('header', 'div', 1, elem0, ['brick', 'level1'], [], [])
+    var elem1 = new Element('header', 'div', 1, elem0, ['brick', 'level1'], [], [], [])
 
-    var elem11 = new Element('logo', 'div', 2, elem1, ['brick', 'level2'], [], [])
-    var elem12 = new Element('login', 'div', 2, elem1, ['brick', 'level2'], [], [])
-    var elem121 = new Element('signUp', 'div', 3, elem12, ['brick', 'level3'], [], [])
+    var elem11 = new Element('logo', 'div', 2, elem1, ['brick', 'level2'], [], [], [])
+    var elem12 = new Element('login', 'div', 2, elem1, ['brick', 'level2'], [], [], [])
+    var elem121 = new Element('signUp', 'div', 3, elem12, ['brick', 'level3'], ['width: 100px'], ['href="#top"'], [])
 
-    var elem2 = new Element('content', 'div', 1, elem0, ['brick', 'level1'], [], [])
+    var elem2 = new Element('content', 'div', 1, elem0, ['brick', 'level1'], [], [], [])
 
-    var elem21 = new Element('sortControls', 'div', 2, elem2, ['brick', 'level2'], [], [])
-    var elem211 = new Element('sortByDate', 'div', 3, elem21, ['brick', 'level3'], [], [])
-    var elem212 = new Element('sortByAuthor', 'div', 3, elem21, ['brick', 'level3'], [], [])
-    var elem22 = new Element('mainText', 'div', 2, elem2, ['brick', 'level2'], [], [])
-    var elem221 = new Element('insetImage', 'div', 3, elem22, ['brick', 'level3'], [], [])
+    var elem21 = new Element('sortControls', 'div', 2, elem2, ['brick', 'level2'], [], [], [])
+    var elem211 = new Element('sortByDate', 'div', 3, elem21, ['brick', 'level3'], [], [], [])
+    var elem212 = new Element('sortByAuthor', 'div', 3, elem21, ['brick', 'level3'], [], [], [])
+    var elem22 = new Element('mainText', 'div', 2, elem2, ['brick', 'level2'], [], [], [])
+    var elem221 = new Element('insetImage', 'div', 3, elem22, ['brick', 'level3'], [], [], [])
 
     elem0.children.push(elem1);
     elem0.children.push(elem2);
@@ -75,16 +76,32 @@ function clickBrick(elem) {
     updateAll();
 }
 
-function clickAdd(event, elem) {
+function clickAddChild(event, elem) {
     stopProp(event);
     
     var virtualId = toVirtualId(elem.id);
     var parent = getElementWithId(virtualId);
     var tempId = parent.id + '-child' + parent.children.length;
-    var child = new Element(tempId, 'div', parent.level + 1, parent, ['brick', 'level' + (parent.level + 1)], [], [])
+    var child = new Element(tempId, 'div', parent.level + 1, parent, ['brick', 'level' + (parent.level + 1)], [], [], []);
     parent.children.push(child);
     selectedBrick = child;
     updateAll();
+}
+
+function clickAddProp(event, button, keystone) {
+    var elem = getElementWithId(toVirtualId(fromKeystoneId(keystone.id)));
+
+    if (button.classList.contains('addClass')) {
+        elem.classes.push('');
+    }
+    else if (button.classList.contains('addStyle')) {
+        elem.styles.push('');
+    }
+    else if (button.classList.contains('addAttribute')) {
+        elem.attributes.push('');
+    }
+
+    updateReal();
 }
 
 function clickDuplicate(event, elem) {
@@ -94,7 +111,7 @@ function clickDuplicate(event, elem) {
     var sibling = getElementWithId(virtualId);
     var parent = sibling.parent;
     var tempId = sibling.id + '-sibling' + parent.children.length;
-    var child = new Element(tempId, 'div', parent.level + 1, parent, ['brick', 'level' + (parent.level + 1)], [], [])
+    var child = new Element(tempId, 'div', parent.level + 1, parent, ['brick', 'level' + (parent.level + 1)], [], [], []);
     parent.children.push(child);
     selectedBrick = child;
     updateAll();
@@ -162,7 +179,7 @@ function createHierarchy(root, hierarchy, level) {
         if (root.parent != null) { // Don't have these buttons if at level 0.
             elem.appendChild(createDuplicateButton(root));
         }
-        elem.appendChild(createAddButton(root));
+        elem.appendChild(createAddChildButton(root));
     }
     elem.setAttribute('class', classes);
 
@@ -189,27 +206,39 @@ function createKeystone(obj, level) {
     keystone.setAttribute('class', classes);
 
     addText(keystone, 'ID');
-    addInput(keystone, obj.id, true, 'inputId');
+    addInput(keystone, obj.id, 'inputId');
     addLineBreak(keystone);
     addText(keystone, 'Tag');
-    addInput(keystone, obj.tag, true, 'inputTag');
-    addLineBreak(keystone);
+    addInput(keystone, obj.tag, 'inputTag');
 
     addLineBreak(keystone);
     addText(keystone, 'Classes');
+    keystone.appendChild(createAddPropButton('addClass'));
     addLineBreak(keystone);
     for (var i = 0; i < obj.classes.length; i++) {
-        addInput(keystone, obj.classes[i], 'inputClass');
+        addInput(keystone, obj.classes[i], 'inputClass', i);
+        keystone.appendChild(createDeletePropButton('deleteClass'));
         addLineBreak(keystone);
     }
 
+    addText(keystone, 'Styles');
+    keystone.appendChild(createAddPropButton('addStyle'));
     addLineBreak(keystone);
-    addText(keystone, 'Properties');
-    addLineBreak(keystone);
-    for (var i = 0; i < obj.props.length; i++) {
-        addInput(keystone, obj.props[i], 'inputProperty');
+    for (var i = 0; i < obj.styles.length; i++) {
+        addInput(keystone, obj.styles[i], 'inputStyle', i);
+        keystone.appendChild(createDeletePropButton('deleteStyle'));
         addLineBreak(keystone);
     }
+
+    addText(keystone, 'Attributes');
+    keystone.appendChild(createAddPropButton('addAttribute'));
+    addLineBreak(keystone);
+    for (var i = 0; i < obj.attributes.length; i++) {
+        addInput(keystone, obj.attributes[i], 'inputAttribute', i);
+        keystone.appendChild(createDeletePropButton('deleteAttribute'));
+        addLineBreak(keystone);
+    }
+
     return keystone;
 }
 
@@ -227,8 +256,12 @@ function addLineBreak(parent) {
     parent.appendChild(elem);
 }
 
-function addInput(parent, value, short = false, purpose) {
+function addInput(parent, value, purpose, index = -1) {
     var elem = document.createElement('input');
+    
+    if (index != -1) {
+        purpose = purpose + ' index-' + index;
+    }
     elem.setAttribute('class', purpose);
     elem.setAttribute('value', value);
     elem.setAttribute('onchange', 'changeInput(this, this.parentElement)');
@@ -241,10 +274,37 @@ function fromKeystoneId(id) {
 
 function changeInput(input, keystone) {
     var brick = getElementWithId(toVirtualId(fromKeystoneId(keystone.id)));
+    
 
     if (input.classList.contains('inputId')) {
         brick.id = input.value;
     }
+    else if (input.classList.contains('inputClass')) {
+        var index = findIndex(input.classList, 'index-');
+        brick.classes[index] = input.value;
+    }
+    else if (input.classList.contains('inputStyle')) {
+        var index = findIndex(input.classList, 'index-');
+        brick.styles[index] = input.value;
+    }
+    else if (input.classList.contains('inputAttribute')) {
+        var index = findIndex(input.classList, 'index-');
+        brick.attributes[index] = input.value;
+    }
+
+    updateReal();
+}
+
+function findIndex(classList, query) {
+    result = 0;
+    for (i = 0; i < classList.length; i++) {
+        var c = classList[i];
+        if (c.substring(0, 6) === query) {
+            result = parseInt(c.slice(6));
+            break;
+        }
+    }
+    return result;
 }
 
 function createDuplicateButton(obj) {
@@ -259,13 +319,35 @@ function createDuplicateButton(obj) {
     return button;
 }
 
-function createAddButton(obj) {
+function createAddChildButton(obj) {
     var button = document.createElement('img');
     button.setAttribute('class', 'icon');
     button.setAttribute('src', 'images/add.png');
     button.setAttribute('title', 'Add a child element');
     button.setAttribute('alt', 'Add');
-    button.setAttribute('onclick', 'clickAdd(event, this.parentElement)');
+    button.setAttribute('onclick', 'clickAddChild(event, this.parentElement)');
+
+    return button;
+}
+
+function createAddPropButton(purpose) {
+    var button = document.createElement('img');
+    button.setAttribute('class', 'icon ' + purpose);
+    button.setAttribute('src', 'images/add.png');
+    button.setAttribute('title', 'Add a new property');
+    button.setAttribute('alt', 'Add');
+    button.setAttribute('onclick', 'clickAddProp(event, this, this.parentElement)');
+
+    return button;
+}
+
+function createDeletePropButton(purpose) {
+    var button = document.createElement('img');
+    button.setAttribute('class', 'iconleft ' + purpose);
+    button.setAttribute('src', 'images/delete.png');
+    button.setAttribute('title', 'Add a new property');
+    button.setAttribute('alt', 'Add');
+    button.setAttribute('onclick', 'clickDeleteProp(event, this, this.parentElement)');
 
     return button;
 }
