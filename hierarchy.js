@@ -26,7 +26,7 @@ class Element {
 var dom = { 'body': null };
 var selectedBrick = null;
 
-function clickLogo() {
+window.onload = function clickLogo() {
 
     var elem0 = new Element('page', 'div', 0, null, ['brick', 'level0'], [], [])
 
@@ -189,16 +189,17 @@ function createKeystone(obj, level) {
     keystone.setAttribute('class', classes);
 
     addText(keystone, 'ID');
-    addInput(keystone, obj.id, true);
+    addInput(keystone, obj.id, true, 'inputId');
+    addLineBreak(keystone);
     addText(keystone, 'Tag');
-    addInput(keystone, obj.tag, true);
+    addInput(keystone, obj.tag, true, 'inputTag');
     addLineBreak(keystone);
 
     addLineBreak(keystone);
     addText(keystone, 'Classes');
     addLineBreak(keystone);
     for (var i = 0; i < obj.classes.length; i++) {
-        addInput(keystone, obj.classes[i]);
+        addInput(keystone, obj.classes[i], 'inputClass');
         addLineBreak(keystone);
     }
 
@@ -206,14 +207,18 @@ function createKeystone(obj, level) {
     addText(keystone, 'Properties');
     addLineBreak(keystone);
     for (var i = 0; i < obj.props.length; i++) {
-        addInput(keystone, obj.props[i]);
+        addInput(keystone, obj.props[i], 'inputProperty');
         addLineBreak(keystone);
     }
     return keystone;
 }
 
 function addText(parent, text) {
-    var elem = document.createTextNode(text);
+    // var elem = document.createTextNode(text);
+
+    var elem = document.createElement('label');
+    elem.setAttribute('class', 'shortLabel');
+    elem.innerHTML = text;
     parent.appendChild(elem);
 }
 
@@ -222,13 +227,24 @@ function addLineBreak(parent) {
     parent.appendChild(elem);
 }
 
-function addInput(parent, value, short = false) {
+function addInput(parent, value, short = false, purpose) {
     var elem = document.createElement('input');
-    if (short) {
-        elem.setAttribute('class', 'short');
-    }
+    elem.setAttribute('class', purpose);
     elem.setAttribute('value', value);
+    elem.setAttribute('onchange', 'changeInput(this, this.parentElement)');
     parent.appendChild(elem);
+}
+
+function fromKeystoneId(id) {
+    return id.slice(0, -9);
+}
+
+function changeInput(input, keystone) {
+    var brick = getElementWithId(toVirtualId(fromKeystoneId(keystone.id)));
+
+    if (input.classList.contains('inputId')) {
+        brick.id = input.value;
+    }
 }
 
 function createDuplicateButton(obj) {
